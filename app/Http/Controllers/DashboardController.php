@@ -26,6 +26,7 @@ class DashboardController extends Controller
 
         $rekapDivisi = $departments->map(function($dept) use ($today) {
             $hadir = Attendance::where('date', $today)
+                ->where('status', 'Hadir')
                 ->whereHas('employee', function($q) use ($dept) {
                     $q->where('department_id', $dept->id);
                 })->count();
