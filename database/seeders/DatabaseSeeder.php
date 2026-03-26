@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void
-    {
-        // 1. Buat Divisi
+{
+    // 1. Buat Divisi
     $depts = ['IT', 'Produksi', 'HRD', 'Gudang'];
     $deptIds = [];
     foreach ($depts as $name) {
@@ -62,4 +62,5 @@ class DatabaseSeeder extends Seeder
             'end_date' => Carbon::now()->endOfWeek()
         ]);
     }
+}
 }
