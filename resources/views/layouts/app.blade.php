@@ -15,19 +15,23 @@
             <h1 class="text-2xl font-bold tracking-wider">SERAK<span class="text-blue-500">.</span></h1>
         </div>
         
-        <nav class="flex-1 px-4 py-6 space-y-2">
-            <a href="/" class="flex items-center gap-3 hover:bg-gray-900 text-white px-4 py-3 rounded-lg transition {{ request()->is('/') ? 'bg-gray-900' : 'text-gray-400' }}">
+       <nav class="flex-1 px-4 py-6 space-y-2">
+            <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-lg transition {{ request()->is('/') ? 'bg-gray-900 text-white' : 'text-gray-400 hover:bg-gray-700' }}">
                 <i class="fas fa-home w-5"></i> Dashboard
             </a>
-            <a href="{{ route('departments.index') }}" class="flex items-center gap-3 hover:text-white hover:bg-gray-700 px-4 py-3 rounded-lg transition {{ request()->routeIs('departments.*') ? 'bg-gray-700 text-white' : 'text-gray-400' }}">
+            
+            <a href="{{ route('departments.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('departments.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700' }}">
                 <i class="fas fa-building w-5"></i> Departemen
             </a>
-            <a href="{{ route('employees.index') }}" class="flex items-center gap-3 text-gray-400 hover:text-white hover:bg-gray-700 px-4 py-3 rounded-lg transition">
+            
+            <a href="{{ route('employees.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('employees.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700' }}">
                 <i class="fas fa-users w-5"></i> Karyawan
             </a>
-            <a href="#" class="flex items-center gap-3 text-gray-400 hover:text-white hover:bg-gray-700 px-4 py-3 rounded-lg transition">
+            
+            <a href="{{ route('attendance.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('attendance.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700' }}">
                 <i class="fas fa-fingerprint w-5"></i> Rekap Absensi
             </a>
+
             <a href="#" class="flex items-center gap-3 text-gray-400 hover:text-white hover:bg-gray-700 px-4 py-3 rounded-lg transition">
                 <i class="fas fa-money-bill-wave w-5"></i> Penggajian
             </a>

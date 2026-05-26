@@ -11,39 +11,62 @@ use Carbon\Carbon;
 class DashboardController extends Controller
 {
     public function index()
-    {
-        $today = Carbon::today();
-        
-        // 1. Statistik Utama
-        $totalEmployee = Employee::where('status', 'Aktif')->count();
-        $presentToday = Attendance::where('date', $today)->where('status', 'Hadir')->count();
-        $absentToday = $totalEmployee - $presentToday;
+{
+    $today = Carbon::today();
 
-        // 2. Persentase Kehadiran Per Departemen
-        $departments = Department::withCount(['employees' => function($query) {
-            $query->where('status', 'Aktif');
-        }])->get();
+    $today = Carbon::today();
+    $startOfWeek = Carbon::now()->startOfWeek();
+    $startOfMonth = Carbon::now()->startOfMonth();
 
-        $rekapDivisi = $departments->map(function($dept) use ($today) {
-            $hadir = Attendance::where('date', $today)
-                ->where('status', 'Hadir')
-                ->whereHas('employee', function($q) use ($dept) {
-                    $q->where('department_id', $dept->id);
-                })->count();
-            
-            // Hitung persentase
-            $persen = $dept->employees_count > 0 
-                ? round(($hadir / $dept->employees_count) * 100, 2) 
-                : 0;
+    // 1. Statistik Harian
+    $presentToday = Attendance::where('date', $today)->where('status', 'Hadir')->count();
 
-            return [
-                'nama' => $dept->name,
-                'total_staff' => $dept->employees_count,
-                'hadir' => $hadir,
-                'persen' => $persen
-            ];
-        });
+    // 2. Statistik Mingguan (Range 7 hari terakhir atau startOfWeek)
+    $presentWeek = Attendance::where('date', '>=', $startOfWeek)
+                             ->where('status', 'Hadir')
+                             ->count();
 
-        return view('dashboard', compact('totalEmployee', 'presentToday', 'absentToday', 'rekapDivisi'));
-    }
+    // 3. Statistik Bulanan (StartOfMonth sampai sekarang)
+    $presentMonth = Attendance::where('date', '>=', $startOfMonth)
+                              ->where('status', 'Hadir')
+                              ->count();
+    
+    // 1. Statistik Utama
+    $totalEmployee = Employee::where('status', 'Aktif')->count();
+    $presentToday = Attendance::where('date', $today)->where('status', 'Hadir')->count();
+    $absentToday = $totalEmployee - $presentToday;
+
+   // 2. Persentase Kehadiran Per Departemen
+    $rekapDivisi = Department::withCount([
+        'employees as total_staff' => function($q) { 
+            // Tambahkan 'employees.' sebelum 'status'
+            $q->where('employees.status', 'Aktif'); 
+        },
+        'attendances as hadir' => function($q) use ($today) {
+            // Tambahkan 'attendances.' sebelum 'status'
+            $q->where('attendances.date', $today)
+              ->where('attendances.status', 'Hadir');
+        }
+    ])->get()->map(function($dept) {
+        $persen = $dept->total_staff > 0 
+            ? round(($dept->hadir / $dept->total_staff) * 100, 2) 
+            : 0;
+
+        return [
+            'nama' => $dept->name,
+            'total_staff' => $dept->total_staff,
+            'hadir' => $dept->hadir,
+            'persen' => $persen
+        ];
+    });
+
+   return view('dashboard', compact(
+        'totalEmployee', 
+        'absentToday',
+        'presentToday', 
+        'presentWeek', 
+        'presentMonth', 
+        'rekapDivisi'
+    ));
+}
 }

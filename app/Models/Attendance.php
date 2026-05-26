@@ -11,8 +11,9 @@ class Attendance extends Model
 
     protected $guarded = [];
 
+    // Relasi ke Karyawan
     public function employee()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

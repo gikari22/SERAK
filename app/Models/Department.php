@@ -11,9 +11,16 @@ class Department extends Model
 
     protected $guarded = [];
 
-    // TAMBAHKAN INI: Relasi One-to-Many
+    // Pastikan ini ada
     public function employees()
     {
-        return $this->hasMany(Employee::class);
+        // Department punya banyak Employee melalui kolom department_id
+        return $this->hasMany(Employee::class, 'department_id');
+    }
+
+    public function attendances()
+    {
+        // Department punya banyak Attendance melalui relasi karyawan
+        return $this->hasManyThrough(Attendance::class, Employee::class, 'department_id', 'employee_id');
     }
 }

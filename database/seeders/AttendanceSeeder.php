@@ -2,52 +2,47 @@
 
 namespace Database\Seeders;
 
-use App\Models\Employee;
-use App\Models\Attendance;
 use Illuminate\Database\Seeder;
+use App\Models\Attendance;
+use App\Models\Employee;
 use Carbon\Carbon;
 
 class AttendanceSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Ambil semua karyawan yang sudah kita buat di MasterSeeder
         $employees = Employee::all();
-        $today = Carbon::today();
+        $statuses = ['Hadir', 'Izin', 'Sakit', 'Alpa'];
 
         foreach ($employees as $emp) {
-            // Kita buat probabilitas 80% karyawan hadir
-            if (rand(1, 10) <= 8) {
+            // Generate data untuk 30 hari ke belakang
+            for ($i = 0; $i < 30; $i++) {
+                $date = Carbon::now()->subDays($i);
                 
-                // Cek apakah dia telat (random jam 08:00 sampai 09:30)
-                $hour = rand(8, 9);
-                $minute = rand(0, 59);
-                $timeIn = sprintf('%02d:%02d:00', $hour, $minute);
-                
-                // Tandai terlambat jika lewat jam 09:00
-                $isLate = ($hour >= 9 && $minute > 0);
+                // Hari Sabtu & Minggu biasanya libur, jadi kita lewati
+                if ($date->isWeekend()) continue;
+
+                // Random status dengan probabilitas: Hadir paling sering (70%)
+                $status = $this->getRandomStatus($statuses);
 
                 Attendance::create([
                     'employee_id' => $emp->id,
-                    'date' => $today,
-                    'time_in' => $timeIn,
-                    'time_out' => '17:00:00',
-                    'status' => 'Hadir',
-                    'source' => rand(1, 2) == 1 ? 'fingerprint' : 'app',
-                    'is_late' => $isLate,
-                ]);
-            } else {
-                // Sisa 20% karyawan statusnya Izin atau Alpa
-                Attendance::create([
-                    'employee_id' => $emp->id,
-                    'date' => $today,
-                    'status' => rand(1, 2) == 1 ? 'Izin' : 'Alpa',
+                    'date' => $date->format('Y-m-d'),
+                    'time_in' => $status == 'Hadir' ? '08:00:00' : null,
+                    'time_out' => $status == 'Hadir' ? '17:00:00' : null,
+                    'status' => $status,
                     'source' => 'app',
+                    'is_late' => ($status == 'Hadir' && rand(1, 10) > 8) ? 1 : 0, // 20% kemungkinan terlambat
                 ]);
             }
         }
+    }
+
+    private function getRandomStatus($statuses) {
+        $rand = rand(1, 100);
+        if ($rand <= 70) return 'Hadir';
+        if ($rand <= 85) return 'Izin';
+        if ($rand <= 95) return 'Sakit';
+        return 'Alpa';
     }
 }

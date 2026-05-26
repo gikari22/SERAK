@@ -18,6 +18,21 @@
         </div>
     </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-blue-600 text-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-sm opacity-80">Hadir Hari Ini</h3>
+        <p class="text-4xl font-bold">{{ $presentToday }}</p>
+    </div>
+    <div class="bg-indigo-600 text-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-sm opacity-80">Hadir Minggu Ini</h3>
+        <p class="text-4xl font-bold">{{ $presentWeek }}</p>
+    </div>
+    <div class="bg-purple-600 text-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-sm opacity-80">Hadir Bulan Ini</h3>
+        <p class="text-4xl font-bold">{{ $presentMonth }}</p>
+    </div>
+</div>
+
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="p-4 bg-gray-50 border-b">
             <h2 class="font-bold text-gray-700">Kehadiran Per Departemen</h2>
@@ -50,4 +65,6 @@
             </tbody>
         </table>
     </div>
+
+
 @endsection
